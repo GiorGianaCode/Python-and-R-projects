@@ -1,0 +1,42 @@
+# install packages
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install(c("gplots", "RColorBrewer"))
+
+# load libraries
+library("gplots")
+library("RColorBrewer")
+
+
+# import data file
+test <- read.table("D:/job/Heatmap/heatmap_G_mai.txt",sep = "\t", row.names = 1, header=TRUE)
+
+# define variables
+Glycolysis <- test[grep("Glycolysis",test$Pathway),]
+Pentose_phosphate <- test[grep("Pentose phosphate",test$Pathway),]
+Glutamate_metabolism <- test[grep("Glutamate metabolism",test$Pathway),]
+Citric_Acid_cycle <- test[grep("Citric acid cycle",test$Pathway),]
+Oxidative_phosphorilation <- test[grep("Oxidative phosphorilation",test$Pathway),]
+Lipid_degradation <- test[grep("Lipid degradation",test$Pathway),]
+Lipid_synthesis <- test[grep("Lipid synthesis",test$Pathway),]
+
+condition_colors <- unlist(lapply(test$Pathway,function(x){
+  if(grepl("Glycolysis",x)) '#EAB95E' 
+  else if(grepl('Pentose phosphate',x)) '#A784AC' 
+  else if(grepl('Glutamate metabolism',x)) '#9C1C86' 
+  else if(grepl('Citric acid cycle',x)) '#B3AEC6' 
+  else if(grepl('Oxidative phosphorilation',x)) '#C0C0C0' 
+  else if(grepl('Lipid degradation',x)) '#B2CC28' 
+  else if(grepl('Lipid synthesis',x)) '#BAD49E' 
+  
+}))
+
+mtest <- as.matrix(test[,1:6])
+
+
+pdf(file="D:/job/Heatmap/HeatmapG.pdf")
+heatmap.2(mtest, trace="none", density="none", col=bluered(20), cexRow=1, cexCol=1, margins = c(5,25), 
+          RowSideColors=condition_colors, scale="row", keysize=1, rowsep = c(1:37), sepcolor="white", sepwidth = c(0.05, 0.05) )
+legend(0.7,0.6,legend=c("Glycolysis","Pentose phosphate", "Glutamate metabolism","Citric Acid Cycle", "Oxidative phosphorilation", "Lipid degradation", "Lipid synthesis"),
+       fill=c('#ADFF2F','#FFFFCC','#CCCC00', '#FFFF66', '#000000', '#E0E0E0', '#808080' ),cex=0.8, bty="n")
+dev.off()
